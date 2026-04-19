@@ -8,7 +8,12 @@ use reqwest::Client;
 use serde::Deserialize;
 use shared::{AirQuality, CurrentWeather, DailyForecast, HourlyForecast, WeatherReport};
 use std::net::SocketAddr;
+use std::env;
 use tower_http::cors::CorsLayer;
+
+async fn health() -> &'static str {
+    "ok"
+}
 
 #[derive(Deserialize)]
 struct GeoSearchResponse {
@@ -258,11 +263,18 @@ fn weather_code_to_description(code: i32) -> &'static str {
 async fn main() {
     // Build the Axum application
     let app = Router::new()
+        .route("/", get(health))
+        .route("/health", get(health))
         .route("/weather/:city", get(get_weather))
         // Open CORS so the browser (Trunk) or Tauri can access this API
         .layer(CorsLayer::permissive());
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8000));
+    let port = env::var("PORT")
+        .ok()
+        .and_then(|value| value.parse::<u16>().ok())
+        .unwrap_or(8000);
+
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
     println!("Backend API listening on {}", addr);
     
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
