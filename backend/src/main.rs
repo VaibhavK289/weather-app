@@ -1,22 +1,29 @@
 use axum::{
-    routing::{get, post},
+    extract::Path,
+    routing::get,
     Json, Router,
 };
-use shared::CalendarEvent;
+use shared::WeatherReport;
 use std::net::SocketAddr;
 use tower_http::cors::CorsLayer;
 
-async fn get_events() -> Json<Vec<CalendarEvent>> {
-    // For now, return an empty array of events
-    // Later, you would query SQLx here
-    Json(vec![])
+async fn get_weather(Path(city): Path<String>) -> Json<WeatherReport> {
+    // For now, return mock data. 
+    // Later, you would query a real weather API (like OpenWeatherMap) here.
+    let mock_report = WeatherReport {
+        city,
+        temperature: 22.5,
+        description: "Partly Cloudy".to_string(),
+        humidity: 60,
+    };
+    Json(mock_report)
 }
 
 #[tokio::main]
 async fn main() {
     // Build the Axum application
     let app = Router::new()
-        .route("/events", get(get_events))
+        .route("/weather/:city", get(get_weather))
         // Open CORS so the browser (Trunk) or Tauri can access this API
         .layer(CorsLayer::permissive());
 
