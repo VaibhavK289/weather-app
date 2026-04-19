@@ -163,6 +163,10 @@ export default function Home() {
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [searchMessage, setSearchMessage] = useState('');
 
+  const apiBaseUrl =
+    process.env.NEXT_PUBLIC_WEATHER_API_BASE_URL ??
+    (process.env.NODE_ENV === 'production' ? '/_/backend' : 'http://127.0.0.1:8000');
+
   useEffect(() => {
     const rawFavorites = localStorage.getItem('weather_favorites');
     const rawRecent = localStorage.getItem('weather_recent');
@@ -218,7 +222,7 @@ export default function Home() {
     setError('');
     setSearchMessage('');
     try {
-      const res = await fetch(`http://127.0.0.1:8000/weather/${encodeURIComponent(city)}`);
+      const res = await fetch(`${apiBaseUrl}/weather/${encodeURIComponent(city)}`);
       if (!res.ok) throw new Error('Request failed');
       const data = (await res.json()) as WeatherReport;
       setWeather(data);
