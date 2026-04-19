@@ -1,12 +1,9 @@
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct CalendarEvent {
-    pub id: Uuid,
-    pub title: String,
-    pub description: Option<String>,
-    pub starts_at: DateTime<Utc>,
-    pub ends_at: DateTime<Utc>,
+pub struct WeatherReport {
+    pub city: String,
+    pub temperature: f32, // e.g., 22.5
+    pub description: String, // e.g., "Partly Cloudy"
+    pub humidity: u8,
 }

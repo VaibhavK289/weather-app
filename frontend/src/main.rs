@@ -42,13 +42,19 @@ fn App() -> impl IntoView {
             <Suspense fallback=move || view! { <p>"Loading weather..."</p> }>
                 {move || {
                     weather.get().map(|data| {
-                        view! {
-                            <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; max-width: 300px;">
-                                <h2>{data.city}</h2>
-                                <h1>{data.temperature.to_string()} "°C"</h1>
-                                <p><strong>"Conditions: "</strong> {data.description}</p>
-                                <p><strong>"Humidity: "</strong> {data.humidity.to_string()} "%"</p>
-                            </div>
+                        if let Some(weather) = data {
+                            view! {
+                                <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; max-width: 300px;">
+                                    <h2>{weather.city}</h2>
+                                    <h1>{weather.temperature.to_string()} "°C"</h1>
+                                    <p><strong>"Conditions: "</strong> {weather.description}</p>
+                                    <p><strong>"Humidity: "</strong> {weather.humidity.to_string()} "%"</p>
+                                </div>
+                            }.into_any()
+                        } else {
+                            view! {
+                                <p>"City not found or error loading data."</p>
+                            }.into_any()
                         }
                     })
                 }}
