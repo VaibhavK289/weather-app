@@ -1,39 +1,55 @@
 use leptos::*;
-use shared::CalendarEvent;
+use shared::WeatherReport;
 
 #[component]
 fn App() -> impl IntoView {
-    // 1. Fetch data from backend when initially loaded
-    let events = create_resource(
-        || (), 
-        |_| async move {
-            let res = reqwasm::http::Request::get("http://127.0.0.1:3000/events")
+    // A signal to hold what the user types in the input box
+    let (city, set_city) = create_signal(String::new());
+    
+    // A signal to trigger fetching when the search button is clicked
+    let (search_query, set_search_query) = create_signal("London".to_string());
+
+    // Fetch data from backend whenever `search_query` changes
+    let weather = create_resource(
+        move || search_query.get(), 
+        |query| async move {
+            let url = format!("http://127.0.0.1:3000/weather/{}", query);
+            let res = reqwasm::http::Request::get(&url)
                 .send()
                 .await
-                .ok()?; // In production use proper error handling
+                .ok()?;
             
-            res.json::<Vec<CalendarEvent>>().await.ok()
+            res.json::<WeatherReport>().await.ok()
         }
     );
 
     view! {
-        <div>
-            <h1>"Rust Tauri/Leptos Calendar"</h1>
-            <p>"Welcome to your full-stack Rust app."</p>
+        <div style="padding: 20px; font-family: sans-serif;">
+            <h1>"Rust Weather App"</h1>
+            
+            <div style="margin-bottom: 20px;">
+                <input 
+                    type="text" 
+                    placeholder="Enter city..."
+                    on:input=move |ev| set_city.set(event_target_value(&ev))
+                    prop:value=city
+                />
+                <button on:click=move |_| set_search_query.set(city.get())>
+                    "Search"
+                </button>
+            </div>
 
-            <Suspense fallback=move || view! { <p>"Loading events..."</p> }>
+            <Suspense fallback=move || view! { <p>"Loading weather..."</p> }>
                 {move || {
-                    events.get().map(|mut data| {
-                        // Empty state handling
-                        if data.is_empty() {
-                            return view! { <p>"No calendar events scheduled!"</p> }.into_any();
-                        }
-                        
+                    weather.get().map(|data| {
                         view! {
-                            <ul>
-                                {data.into_iter().map(|e| view! { <li>{e.title}</li> }).collect_view()}
-                            </ul>
-                        }.into_any()
+                            <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; max-width: 300px;">
+                                <h2>{data.city}</h2>
+                                <h1>{data.temperature.to_string()} "°C"</h1>
+                                <p><strong>"Conditions: "</strong> {data.description}</p>
+                                <p><strong>"Humidity: "</strong> {data.humidity.to_string()} "%"</p>
+                            </div>
+                        }
                     })
                 }}
             </Suspense>
