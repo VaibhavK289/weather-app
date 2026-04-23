@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 
@@ -230,7 +230,7 @@ export default function Home() {
       setLastUpdated(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: data.timezone }));
       setRecent((prev) => [data.city, ...prev.filter((item) => item !== data.city)].slice(0, 6));
     } catch {
-      setError('Unable to fetch weather data. Ensure backend is running on 127.0.0.1:8000.');
+      setError(`Unable to fetch weather data. Ensure backend is running at ${apiBaseUrl}.`);
       setWeather(null);
     } finally {
       setLoading(false);
