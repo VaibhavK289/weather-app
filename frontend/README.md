@@ -61,14 +61,14 @@ From the `frontend` directory:
 
 ```powershell
 npm install
-$env:DESKTOP_API_BASE_URL="https://weather-app-backend.onrender.com"
+$env:DESKTOP_API_BASE_URL="https://weather-app-backend-nbwv.onrender.com"
 npm run tauri:build
 ```
 
 Notes:
 
 1. `DESKTOP_API_BASE_URL` is optional if `NEXT_PUBLIC_WEATHER_API_BASE_URL` is already set.
-2. If neither variable is set, build falls back to `https://weather-app-backend.onrender.com`.
+2. If neither variable is set, build falls back to `https://weather-app-backend-nbwv.onrender.com`.
 
 ### Output location
 
