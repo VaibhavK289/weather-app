@@ -165,7 +165,7 @@ export default function Home() {
 
   const apiBaseUrl =
     process.env.NEXT_PUBLIC_WEATHER_API_BASE_URL ??
-    (process.env.NODE_ENV === 'production' ? '/_/backend' : 'http://127.0.0.1:8000');
+    (process.env.NODE_ENV === 'production' ? 'https://weather-app-backend-nbwv.onrender.com' : 'http://127.0.0.1:8000');
 
   useEffect(() => {
     const rawFavorites = localStorage.getItem('weather_favorites');
